@@ -1,0 +1,32 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
+	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+	
+	<f:section title="Distruct">
+		
+		<f:entry title="${%Distruct installation}" description="${%List of Distruct installations}">
+			<f:repeatable var="inst" items="${descriptor.installations}">
+				<table width="100%">
+
+					<f:entry title="${%Name}">
+						<f:textbox name="distruct.name" value="${inst.name}"
+							checkUrl="'${rootURL}/publisher/DistructPublisher/required?value='+escape(this.value)" />
+					</f:entry>
+					
+					<f:entry title="${%Path to executable}">
+                        <f:textbox name="distruct.pathToDistruct" value="${inst.pathToDistruct}"
+                            checkUrl="'${rootURL}/publisher/DistructPublisher/required?value='+escape(this.value)" />
+                    </f:entry>
+
+					<f:entry title="">
+						<div align="right">
+							<f:repeatableDeleteButton />
+						</div>
+					</f:entry>
+
+				</table>
+			</f:repeatable>
+		</f:entry>
+		
+	</f:section>
+	
+</j:jelly>

@@ -1,0 +1,149 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
+	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+
+	<f:entry title="${%Distruct installation}" help="${rootURL}/../plugin/distruct/help-structureInstallationName.html">
+		<select class="setting-input" name="distruct.distructInstallationName">
+			<option>(Default)</option>
+			<j:forEach var="inst" items="${descriptor.installations}">
+				<f:option selected="${inst.name==instance.distructInstallationName}">${inst.name}</f:option>
+			</j:forEach>
+		</select>
+	</f:entry>
+	
+	<f:block>Distruct parameters</f:block>
+    
+    <f:entry title="${%Populations File}">
+        <f:textbox name="populationsFile" value="${instance.populationsFile}" checkUrl="'${rootURL}/publisher/DistructPublisher/required?value='+escape(this.value)" />
+    </f:entry>
+    
+    <f:entry title="${%Individuals File}">
+        <f:textbox name="individualsFile" value="${instance.individualsFile}" checkUrl="'${rootURL}/publisher/DistructPublisher/required?value='+escape(this.value)" />
+    </f:entry>
+    
+    <f:entry title="${%Labels File}">
+        <f:textbox name="labelsFile" value="${instance.labelsFile}" checkUrl="'${rootURL}/publisher/DistructPublisher/required?value='+escape(this.value)" />
+    </f:entry>
+    
+    <f:entry title="${%Languages File}">
+        <f:textbox name="languagesFile" value="${instance.languagesFile}" checkUrl="'${rootURL}/publisher/DistructPublisher/required?value='+escape(this.value)" />
+    </f:entry>
+    
+    <f:entry title="${%Permutations File}">
+        <f:textbox name="permutationsToPrintFile" value="${instance.permutationsToPrintFile}" checkUrl="'${rootURL}/publisher/DistructPublisher/required?value='+escape(this.value)" />
+    </f:entry>
+    
+    <f:entry title="${%Output File}">
+        <f:textbox name="outputFile" value="${instance.outputFile}" checkUrl="'${rootURL}/publisher/DistructPublisher/required?value='+escape(this.value)" />
+    </f:entry>
+    
+    <f:entry title="${%K}">
+        <f:textbox name="k" value="${instance.K}" checkUrl="'${rootURL}/publisher/DistructPublisher/required?value='+escape(this.value)" />
+    </f:entry>
+    
+    <f:entry title="${%Number of Populations}">
+        <f:textbox name="numberOfPopulations" value="${instance.numberOfPopulations}" checkUrl="'${rootURL}/publisher/DistructPublisher/longRequired?value='+escape(this.value)" />
+    </f:entry>
+    
+    <f:entry title="${%Number of Individuals}">
+        <f:textbox name="numberOfIndividuals" value="${instance.numberOfIndividuals}" checkUrl="'${rootURL}/publisher/DistructPublisher/longRequired?value='+escape(this.value)" />
+    </f:entry>
+    
+	<f:entry title="${%Check if indiv q's are to be printed, uncheck if only population q's}">
+        <f:checkbox name="printIndividuals" checked="${instance.printIndividuals}" default="true" />
+    </f:entry>
+    
+    <f:entry title="${%Print labels above figure?}">
+        <f:checkbox name="printLabelAtop" checked="${instance.printLabelAtop}" default="true" />
+    </f:entry>
+    
+    <f:entry title="${%Print labels below figure?}">
+        <f:checkbox name="printLabelBelow" checked="${instance.printLabelBelow}" default="true" />
+    </f:entry>
+    
+    <f:entry title="${%Print lines to separate populations?}">
+        <f:checkbox name="printSeparators" checked="${instance.printSeparators}" default="true" />
+    </f:entry>
+    
+    <f:entry title="${%Size of font}">
+        <f:textbox name="fontHeight" value="${instance.fontHeight}" checkUrl="'${rootURL}/publisher/DistructPublisher/doubleRequired?value='+escape(this.value)" />
+    </f:entry>
+    
+    <f:entry title="${%Distance above plot to place text}">
+        <f:textbox name="distanceAbove" value="${instance.distanceAbove}" checkUrl="'${rootURL}/publisher/DistructPublisher/doubleRequired?value='+escape(this.value)" />
+    </f:entry>
+    
+    <f:entry title="${%Distance below plot to place text}">
+        <f:textbox name="distanceBelow" value="${instance.distanceBelow}" checkUrl="'${rootURL}/publisher/DistructPublisher/doubleRequired?value='+escape(this.value)" />
+    </f:entry>
+    
+    <f:entry title="${%Height of the figure}">
+        <f:textbox name="boxHeight" value="${instance.boxHeight}" checkUrl="'${rootURL}/publisher/DistructPublisher/doubleRequired?value='+escape(this.value)" />
+    </f:entry>
+    
+    <f:entry title="${%Width of an individual}">
+        <f:textbox name="individualWidth" value="${instance.individualWidth}" checkUrl="'${rootURL}/publisher/DistructPublisher/doubleRequired?value='+escape(this.value)" />
+    </f:entry>
+    
+    <f:block>Distruct <strong>extra</strong> parameters</f:block>
+    
+    <f:entry title="${%Orientation}">
+        <f:textbox name="orientation" value="${instance.orientation}" checkUrl="'${rootURL}/publisher/DistructPublisher/longRequired?value='+escape(this.value)" />
+    </f:entry>
+    
+    <f:entry title="${%Lower-left x-coordinate of figure}">
+        <f:textbox name="xOrigin" value="${instance.xOrigin}" checkUrl="'${rootURL}/publisher/DistructPublisher/doubleRequired?value='+escape(this.value)" />
+    </f:entry>
+    
+    <f:entry title="${%Lower-left y-coordinate of figure}">
+        <f:textbox name="yOrigin" value="${instance.yOrigin}" checkUrl="'${rootURL}/publisher/DistructPublisher/doubleRequired?value='+escape(this.value)" />
+    </f:entry>
+    
+    <f:entry title="${%Scale for x direction}">
+        <f:textbox name="xScale" value="${instance.xScale}" checkUrl="'${rootURL}/publisher/DistructPublisher/doubleRequired?value='+escape(this.value)" />
+    </f:entry>
+    
+    <f:entry title="${%Scale for y direction}">
+        <f:textbox name="yScale" value="${instance.yScale}" checkUrl="'${rootURL}/publisher/DistructPublisher/doubleRequired?value='+escape(this.value)" />
+    </f:entry>
+    
+    <f:entry title="${%Angle for labels atop figure}">
+        <f:textbox name="angleLabelAtop" value="${instance.angleLabelAtop}" checkUrl="'${rootURL}/publisher/DistructPublisher/doubleRequired?value='+escape(this.value)" />
+    </f:entry>
+    
+    <f:entry title="${%Angle for labels below figure}">
+        <f:textbox name="angleLabelBelow" value="${instance.angleLabelBelow}" checkUrl="'${rootURL}/publisher/DistructPublisher/doubleRequired?value='+escape(this.value)" />
+    </f:entry>
+    
+    <f:entry title="${%Width of 'pen' for rim of box}">
+        <f:textbox name="rimLineWidth" value="${instance.rimLineWidth}" checkUrl="'${rootURL}/publisher/DistructPublisher/doubleRequired?value='+escape(this.value)" />
+    </f:entry>
+    
+    <f:entry title="${%Width of 'pen' for separators between pops and for tics}">
+        <f:textbox name="separatorLineWidth" value="${instance.separatorLineWidth}" checkUrl="'${rootURL}/publisher/DistructPublisher/doubleRequired?value='+escape(this.value)" />
+    </f:entry>
+    
+    <f:entry title="${%Width of 'pen' used for individuals}">
+        <f:textbox name="individualsLineWidth" value="${instance.individualsLineWidth}" checkUrl="'${rootURL}/publisher/DistructPublisher/doubleRequired?value='+escape(this.value)" />
+    </f:entry>
+    
+    <f:entry title="${%Use grayscale instead of colors?}">
+        <f:checkbox name="useGrayscale" checked="${instance.useGrayscale}" default="false" />
+    </f:entry>
+    
+    <f:entry title="${%Print some of the data to the screen?}">
+        <f:checkbox name="echoData" checked="${instance.echoData}" default="true" />
+    </f:entry>
+    
+    <f:entry title="${%Print the data as a comment in the ps file?}">
+        <f:checkbox name="reprintData" checked="${instance.reprintData}" default="true" />
+    </f:entry>
+    
+    <f:entry title="${%Print the name of INFILE_POPQ above the figure?}">
+        <f:checkbox name="printFileName" checked="${instance.printFileName}" default="false" />
+    </f:entry>
+    
+    <f:entry title="${%Print ColorBrewer settings in the output file?}">
+        <f:checkbox name="printColorBrewer" checked="${instance.printColorBrewer}" default="true" />
+    </f:entry>
+    
+</j:jelly>
