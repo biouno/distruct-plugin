@@ -1,4 +1,5 @@
 package org.biouno.distruct;
+
 import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
@@ -10,73 +11,88 @@ import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
 import hudson.util.ArgumentListBuilder;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.List;
 import java.util.Map;
 
+import javax.imageio.ImageIO;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.ghost4j.converter.ConverterException;
+import org.ghost4j.converter.PDFConverter;
+import org.ghost4j.document.DocumentException;
+import org.ghost4j.document.PSDocument;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * Distruct publisher.
  */
 public class DistructPublisher extends Notifier {
-	
+
 	private final static String LINE_SEPARATOR = System.getProperty("line.separator");
 
 	private final String distructInstallationName;
-	
-    private final String populationsFile;
-    private final String individualsFile;
-    private final String labelsFile;
-    private final String languagesFile;
-    private final String permutationsToPrintFile;
-    private final String outputFile;
-    
-    private final String k;
-    private final Integer numberOfPopulations;
-    private final Integer numberOfIndividuals;
-    
-    private final Boolean printIndividuals;
-    private final Boolean printLabelAtop;
-    private final Boolean printLabelBelow;
-    private final Boolean printSeparators;
-    
-    private final Double fontHeight;
-    private final Double distanceAbove;
-    private final Double distanceBelow;
-    private final Double boxHeight;
-    private final Double individualWidth;
-    
-    // extra
-    private final Integer orientation;
-    private final Double xOrigin;
-    private final Double yOrigin;
-    private final Double xScale;
-    private final Double yScale;
-    private final Double angleLabelAtop;
-    private final Double angleLabelBelow;
-    private final Double rimLineWidth;
-    private final Double separatorLineWidth;
-    private final Double individualsLineWidth;
-    private final Boolean useGrayscale;
-    private final Boolean echoData;
-    private final Boolean reprintData;
-    private final Boolean printFileName;
-    private final Boolean printColorBrewer;
 
-    @DataBoundConstructor
-    public DistructPublisher(String distructInstallationName, String populationsFile, String individualsFile,
-			String labelsFile, String languagesFile,
-			String permutationsToPrintFile, String outputFile, String k,
-			Integer numberOfPopulations, Integer numberOfIndividuals,
-			Boolean printIndividuals, Boolean printLabelAtop,
-			Boolean printLabelBelow, Boolean printSeparators,
-			Double fontHeight, Double distanceAbove, Double distanceBelow,
-			Double boxHeight, Double individualWidth, Integer orientation,
-			Double xOrigin, Double yOrigin, Double xScale, Double yScale,
-			Double angleLabelAtop, Double angleLabelBelow, Double rimLineWidth,
-			Double separatorLineWidth, Double individualsLineWidth,
-			Boolean useGrayscale, Boolean echoData, Boolean reprintData,
-			Boolean printFileName, Boolean printColorBrewer) {
+	private final String populationsFile;
+	private final String individualsFile;
+	private final String labelsFile;
+	private final String languagesFile;
+	private final String permutationsToPrintFile;
+	private final String outputFile;
+
+	private final String k;
+	private final String numberOfPopulations;
+	private final String numberOfIndividuals;
+
+	private final Boolean printIndividuals;
+	private final Boolean printLabelAtop;
+	private final Boolean printLabelBelow;
+	private final Boolean printSeparators;
+
+	private final Double fontHeight;
+	private final Double distanceAbove;
+	private final Double distanceBelow;
+	private final Double boxHeight;
+	private final Double individualWidth;
+
+	// extra
+	private final Integer orientation;
+	private final Double xOrigin;
+	private final Double yOrigin;
+	private final Double xScale;
+	private final Double yScale;
+	private final Double angleLabelAtop;
+	private final Double angleLabelBelow;
+	private final Double rimLineWidth;
+	private final Double separatorLineWidth;
+	private final Double individualsLineWidth;
+	private final Boolean useGrayscale;
+	private final Boolean echoData;
+	private final Boolean reprintData;
+	private final Boolean printFileName;
+	private final Boolean printColorBrewer;
+
+	@DataBoundConstructor
+	public DistructPublisher(String distructInstallationName,
+			String populationsFile, String individualsFile, String labelsFile,
+			String languagesFile, String permutationsToPrintFile,
+			String outputFile, String k, String numberOfPopulations,
+			String numberOfIndividuals, Boolean printIndividuals,
+			Boolean printLabelAtop, Boolean printLabelBelow,
+			Boolean printSeparators, Double fontHeight, Double distanceAbove,
+			Double distanceBelow, Double boxHeight, Double individualWidth,
+			Integer orientation, Double xOrigin, Double yOrigin, Double xScale,
+			Double yScale, Double angleLabelAtop, Double angleLabelBelow,
+			Double rimLineWidth, Double separatorLineWidth,
+			Double individualsLineWidth, Boolean useGrayscale,
+			Boolean echoData, Boolean reprintData, Boolean printFileName,
+			Boolean printColorBrewer) {
 		super();
 		this.distructInstallationName = distructInstallationName;
 		this.populationsFile = populationsFile;
@@ -113,7 +129,7 @@ public class DistructPublisher extends Notifier {
 		this.printFileName = printFileName;
 		this.printColorBrewer = printColorBrewer;
 	}
-    
+
 	/**
 	 * @return the distructInstallationName
 	 */
@@ -173,14 +189,14 @@ public class DistructPublisher extends Notifier {
 	/**
 	 * @return the numberOfPopulations
 	 */
-	public Integer getNumberOfPopulations() {
+	public String getNumberOfPopulations() {
 		return numberOfPopulations;
 	}
 
 	/**
 	 * @return the numberOfIndividuals
 	 */
-	public Integer getNumberOfIndividuals() {
+	public String getNumberOfIndividuals() {
 		return numberOfIndividuals;
 	}
 
@@ -355,7 +371,7 @@ public class DistructPublisher extends Notifier {
 	public BuildStepMonitor getRequiredMonitorService() {
 		return BuildStepMonitor.NONE;
 	}
-	
+
 	@Extension
 	public static final DistructPublisherDescriptor DESCRIPTOR = new DistructPublisherDescriptor();
 
@@ -374,120 +390,191 @@ public class DistructPublisher extends Notifier {
 	private static final double DEFAULT_RIM_LINE_WIDTH = 3;
 	private static final double DEFAULT_SEPARATOR_LINE_WIDTH = 0.3;
 	private static final double DEFAULT_INDIVIDUALS_LINE_WIDTH = 0.3;
-	
+
 	@Override
-	public boolean perform(AbstractBuild<?,?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
-		
+	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher,
+			BuildListener listener) throws InterruptedException, IOException {
+
 		listener.getLogger().println("Distruct publisher.");
-		
+
 		// Get the distruct installation used
-		final DistructInstallation distructInstallation = DESCRIPTOR.getInstallationByName(this.distructInstallationName);
+		final DistructInstallation distructInstallation = DESCRIPTOR
+				.getInstallationByName(this.distructInstallationName);
 		if (distructInstallation == null) {
 			throw new AbortException("Invalid CLUMPP installation");
 		}
-		
+
 		final EnvVars envVars = build.getEnvironment(listener);
 		envVars.overrideAll(build.getBuildVariables());
 		final FilePath workspace = build.getWorkspace();
 		final Map<String, String> env = build.getEnvironment(listener);
-		
+
 		listener.getLogger().println("Creating drawparams");
 
 		final ArgumentListBuilder args = new ArgumentListBuilder();
 		try {
-			final FilePath drawParamsFilePath = createDrawParams(workspace, envVars);
+			FilePath labelsFile = new FilePath(workspace, "labelsFileJenkins");
+			labelsFile.write(this.labelsFile, "UTF-8");
+			FilePath languagesFile = new FilePath(workspace,
+					"languagesFileJenkins");
+			languagesFile.write(this.languagesFile, "UTF-8");
+			FilePath permutationsToPrintFile = new FilePath(workspace,
+					"permutationsFileJenkins");
+			permutationsToPrintFile
+					.write(this.permutationsToPrintFile, "UTF-8");
+			final FilePath drawParamsFilePath = createDrawParams(workspace,
+					labelsFile.getName(), languagesFile.getName(),
+					permutationsToPrintFile.getName(), envVars);
 			args.add(distructInstallation.getPathToDistruct());
 			args.add("-d");
 			args.add(drawParamsFilePath.getName());
 		} catch (IOException ioe) {
 			ioe.printStackTrace(listener.getLogger());
-			throw new AbortException("Failed to create drawparams: " + ioe.getMessage());
+			throw new AbortException("Failed to create drawparams: "
+					+ ioe.getMessage());
 		} catch (InterruptedException ie) {
 			ie.printStackTrace(listener.getLogger());
-			throw new AbortException("Failed to create drawparams: " + ie.getMessage());
+			throw new AbortException("Failed to create drawparams: "
+					+ ie.getMessage());
 		}
-		
-		listener.getLogger().println("Executing distruct. Command args: " + args.toStringWithQuote());
-		final Integer exitCode = launcher.launch().cmds(args).envs(env).stdout(listener).pwd(build.getModuleRoot()).join();
-		
+
+		listener.getLogger()
+				.println(
+						"Executing distruct. Command args: "
+								+ args.toStringWithQuote());
+		final Integer exitCode = launcher.launch().cmds(args).envs(env)
+				.stdout(listener).pwd(build.getModuleRoot()).join();
+
 		// collect results
 		if (exitCode != 1) {
-			listener.getLogger().println("Error executing distruct. Exit code: " + exitCode);
+			listener.getLogger().println(
+					"Error executing distruct. Exit code: " + exitCode);
 			return Boolean.FALSE;
 		} else {
-			// add action
 			FilePath outputFilePath = new FilePath(workspace, outputFile);
-			DistructPublisherBuildAction action = new DistructPublisherBuildAction(outputFilePath);
+			FilePath pdf = new FilePath(workspace, "distruct-converted.pdf");
+			FilePath jpg = new FilePath(workspace, "distruct.jpg");
+			try {
+				ps2pdf(outputFilePath, pdf);
+
+				PdfUtils.cropToJPEG(new File(pdf.getRemote()),
+						new File(jpg.getRemote()), new File(new FilePath(
+								workspace, "distruct.pdf").getRemote()));
+			} catch (Exception e) {
+				e.printStackTrace(listener.getLogger());
+				throw new AbortException("Failed to generate PDF: "
+						+ e.getMessage());
+			}
+
+			// add action
+			DistructPublisherBuildAction action = new DistructPublisherBuildAction(
+					outputFilePath, jpg);
 			build.addAction(action);
 			return Boolean.TRUE;
 		}
 	}
 
-	private FilePath createDrawParams(FilePath workspace, EnvVars envVars) throws IOException, InterruptedException {
+	private FilePath createDrawParams(FilePath workspace, String labelsFile,
+			String languagesFile, String permutationsToPrintFile,
+			EnvVars envVars) throws IOException, InterruptedException {
 		final FilePath drawparams = new FilePath(workspace, "drawparamsJenkins");
 		final StringBuilder sb = new StringBuilder();
 		// params
-		sb.append("#define INFILE_POPQ        " + populationsFile + LINE_SEPARATOR);
-		sb.append("#define INFILE_INDIVQ      " + individualsFile + LINE_SEPARATOR);
+		sb.append("#define INFILE_POPQ        " + populationsFile
+				+ LINE_SEPARATOR);
+		sb.append("#define INFILE_INDIVQ      " + individualsFile
+				+ LINE_SEPARATOR);
 		sb.append("#define INFILE_LABEL_BELOW " + labelsFile + LINE_SEPARATOR);
-		sb.append("#define INFILE_LABEL_ATOP  " + languagesFile + LINE_SEPARATOR);
-		sb.append("#define INFILE_CLUST_PERM  " + permutationsToPrintFile + LINE_SEPARATOR);
+		sb.append("#define INFILE_LABEL_ATOP  " + languagesFile
+				+ LINE_SEPARATOR);
+		sb.append("#define INFILE_CLUST_PERM  " + permutationsToPrintFile
+				+ LINE_SEPARATOR);
 		sb.append("#define OUTFILE            " + outputFile + LINE_SEPARATOR);
 		sb.append("#define K	" + k + LINE_SEPARATOR);
 		sb.append("#define NUMPOPS " + numberOfPopulations + LINE_SEPARATOR);
 		sb.append("#define NUMINDS " + numberOfIndividuals + LINE_SEPARATOR);
-		sb.append("#define PRINT_INDIVS      " + getBoolean(printIndividuals) + LINE_SEPARATOR);
-		sb.append("#define PRINT_LABEL_ATOP  " + getBoolean(printLabelAtop) + LINE_SEPARATOR);
-		sb.append("#define PRINT_LABEL_BELOW " + getBoolean(printLabelBelow) + LINE_SEPARATOR);
-		sb.append("#define PRINT_SEP         " + getBoolean(printSeparators) + LINE_SEPARATOR);
-		sb.append("#define FONTHEIGHT " + getDouble(fontHeight, DEFAULT_FONT_HEIGHT) + LINE_SEPARATOR);
-		sb.append("#define DIST_ABOVE " + getDouble(distanceAbove, DEFAULT_DISTANCE_ABOVE) + LINE_SEPARATOR);
-		sb.append("#define DIST_BELOW " + getDouble(distanceBelow, DEFAULT_DISTANCE_BELOW) + LINE_SEPARATOR);
-		sb.append("#define BOXHEIGHT  " + getDouble(boxHeight, DEFAULT_BOX_HEIGHT) + LINE_SEPARATOR);
-		sb.append("#define INDIVWIDTH " + getDouble(individualWidth, DEFAULT_INDIVIDUAL_WIDTH) + LINE_SEPARATOR);
+		sb.append("#define PRINT_INDIVS      " + getBoolean(printIndividuals)
+				+ LINE_SEPARATOR);
+		sb.append("#define PRINT_LABEL_ATOP  " + getBoolean(printLabelAtop)
+				+ LINE_SEPARATOR);
+		sb.append("#define PRINT_LABEL_BELOW " + getBoolean(printLabelBelow)
+				+ LINE_SEPARATOR);
+		sb.append("#define PRINT_SEP         " + getBoolean(printSeparators)
+				+ LINE_SEPARATOR);
+		sb.append("#define FONTHEIGHT "
+				+ getDouble(fontHeight, DEFAULT_FONT_HEIGHT) + LINE_SEPARATOR);
+		sb.append("#define DIST_ABOVE "
+				+ getDouble(distanceAbove, DEFAULT_DISTANCE_ABOVE)
+				+ LINE_SEPARATOR);
+		sb.append("#define DIST_BELOW "
+				+ getDouble(distanceBelow, DEFAULT_DISTANCE_BELOW)
+				+ LINE_SEPARATOR);
+		sb.append("#define BOXHEIGHT  "
+				+ getDouble(boxHeight, DEFAULT_BOX_HEIGHT) + LINE_SEPARATOR);
+		sb.append("#define INDIVWIDTH "
+				+ getDouble(individualWidth, DEFAULT_INDIVIDUAL_WIDTH)
+				+ LINE_SEPARATOR);
 		// extra
-		sb.append("#define ORIENTATION " + getInteger(orientation, DEFAULT_ORIENTATION) + LINE_SEPARATOR);
-		sb.append("#define XORIGIN " + getDouble(xOrigin, DEFAULT_XORIGIN) + LINE_SEPARATOR);
-		sb.append("#define YORIGIN " + getDouble(yOrigin, DEFAULT_YORIGIN) + LINE_SEPARATOR);
-		sb.append("#define XSCALE " + getDouble(xScale, DEFAULT_XSCALE) + LINE_SEPARATOR);
-		sb.append("#define YSCALE " + getDouble(yScale, DEFAULT_YSCALE) + LINE_SEPARATOR);
-		sb.append("#define ANGLE_LABEL_ATOP " + getDouble(angleLabelAtop, DEFAULT_ANGLE_LABEL_ATOP) + LINE_SEPARATOR);
-		sb.append("#define ANGLE_LABEL_BELOW " + getDouble(angleLabelBelow, DEFAULT_ANGLE_LABEL_BELOW) + LINE_SEPARATOR);
-		sb.append("#define LINEWIDTH_RIM  " + getDouble(rimLineWidth, DEFAULT_RIM_LINE_WIDTH) + LINE_SEPARATOR);
-		sb.append("#define LINEWIDTH_SEP " + getDouble(separatorLineWidth, DEFAULT_SEPARATOR_LINE_WIDTH) + LINE_SEPARATOR);
-		sb.append("#define LINEWIDTH_IND " + getDouble(individualsLineWidth, DEFAULT_INDIVIDUALS_LINE_WIDTH) + LINE_SEPARATOR);
-		sb.append("#define GRAYSCALE " + getBoolean(useGrayscale) + LINE_SEPARATOR);
-		sb.append("#define REPRINT_DATA " + getBoolean(reprintData) + LINE_SEPARATOR);
-		sb.append("#define PRINT_INFILE_NAME " + getBoolean(printFileName) + LINE_SEPARATOR);
-		sb.append("#define PRINT_COLOR_BREWER " + getBoolean(printColorBrewer) + LINE_SEPARATOR);
-		
+		sb.append("#define ORIENTATION "
+				+ getInteger(orientation, DEFAULT_ORIENTATION) + LINE_SEPARATOR);
+		sb.append("#define XORIGIN " + getDouble(xOrigin, DEFAULT_XORIGIN)
+				+ LINE_SEPARATOR);
+		sb.append("#define YORIGIN " + getDouble(yOrigin, DEFAULT_YORIGIN)
+				+ LINE_SEPARATOR);
+		sb.append("#define XSCALE " + getDouble(xScale, DEFAULT_XSCALE)
+				+ LINE_SEPARATOR);
+		sb.append("#define YSCALE " + getDouble(yScale, DEFAULT_YSCALE)
+				+ LINE_SEPARATOR);
+		sb.append("#define ANGLE_LABEL_ATOP "
+				+ getDouble(angleLabelAtop, DEFAULT_ANGLE_LABEL_ATOP)
+				+ LINE_SEPARATOR);
+		sb.append("#define ANGLE_LABEL_BELOW "
+				+ getDouble(angleLabelBelow, DEFAULT_ANGLE_LABEL_BELOW)
+				+ LINE_SEPARATOR);
+		sb.append("#define LINEWIDTH_RIM  "
+				+ getDouble(rimLineWidth, DEFAULT_RIM_LINE_WIDTH)
+				+ LINE_SEPARATOR);
+		sb.append("#define LINEWIDTH_SEP "
+				+ getDouble(separatorLineWidth, DEFAULT_SEPARATOR_LINE_WIDTH)
+				+ LINE_SEPARATOR);
+		sb.append("#define LINEWIDTH_IND "
+				+ getDouble(individualsLineWidth,
+						DEFAULT_INDIVIDUALS_LINE_WIDTH) + LINE_SEPARATOR);
+		sb.append("#define GRAYSCALE " + getBoolean(useGrayscale)
+				+ LINE_SEPARATOR);
+		sb.append("#define REPRINT_DATA " + getBoolean(reprintData)
+				+ LINE_SEPARATOR);
+		sb.append("#define PRINT_INFILE_NAME " + getBoolean(printFileName)
+				+ LINE_SEPARATOR);
+		sb.append("#define PRINT_COLOR_BREWER " + getBoolean(printColorBrewer)
+				+ LINE_SEPARATOR);
+
 		String content = envVars.expand(sb.toString());
-		
+
 		// end
 		drawparams.write(content, "UTF-8");
 		return drawparams;
 	}
-	
+
 	private String getBoolean(Boolean variable) {
 		if (null != variable) {
 			return variable ? "1" : "0";
 		}
 		return "0";
 	}
-	
+
 	private String getInteger(Integer variable, int defaultValue) {
 		if (null != variable) {
-			return Integer.toString(variable); 
+			return Integer.toString(variable);
 		}
 		return Integer.toString(defaultValue);
 	}
-	
+
 	private String getDouble(Double variable, double defaultValue) {
 		if (null != variable) {
-			return Double.toString(variable); 
+			return Double.toString(variable);
 		}
 		return Double.toString(defaultValue);
 	}
 
 }
-

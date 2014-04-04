@@ -20,16 +20,16 @@
         <f:textbox name="individualsFile" value="${instance.individualsFile}" checkUrl="'${rootURL}/publisher/DistructPublisher/required?value='+escape(this.value)" />
     </f:entry>
     
-    <f:entry title="${%Labels File}">
-        <f:textbox name="labelsFile" value="${instance.labelsFile}" checkUrl="'${rootURL}/publisher/DistructPublisher/required?value='+escape(this.value)" />
+    <f:entry title="${%Bottom Labels File}">
+        <f:textarea name="labelsFile" value="${instance.labelsFile}" checkUrl="'${rootURL}/publisher/DistructPublisher/required?value='+escape(this.value)" />
     </f:entry>
     
-    <f:entry title="${%Languages File}">
-        <f:textbox name="languagesFile" value="${instance.languagesFile}" checkUrl="'${rootURL}/publisher/DistructPublisher/required?value='+escape(this.value)" />
+    <f:entry title="${%Top Labels File}">
+        <f:textarea name="languagesFile" value="${instance.languagesFile}" checkUrl="'${rootURL}/publisher/DistructPublisher/required?value='+escape(this.value)" />
     </f:entry>
     
     <f:entry title="${%Permutations File}">
-        <f:textbox name="permutationsToPrintFile" value="${instance.permutationsToPrintFile}" checkUrl="'${rootURL}/publisher/DistructPublisher/required?value='+escape(this.value)" />
+        <f:textarea name="permutationsToPrintFile" value="${instance.permutationsToPrintFile}" checkUrl="'${rootURL}/publisher/DistructPublisher/required?value='+escape(this.value)" />
     </f:entry>
     
     <f:entry title="${%Output File}">
@@ -41,11 +41,11 @@
     </f:entry>
     
     <f:entry title="${%Number of Populations}">
-        <f:textbox name="numberOfPopulations" value="${instance.numberOfPopulations}" checkUrl="'${rootURL}/publisher/DistructPublisher/longRequired?value='+escape(this.value)" />
+        <f:textbox name="numberOfPopulations" value="${instance.numberOfPopulations}" checkUrl="'${rootURL}/publisher/DistructPublisher/required?value='+escape(this.value)" />
     </f:entry>
     
     <f:entry title="${%Number of Individuals}">
-        <f:textbox name="numberOfIndividuals" value="${instance.numberOfIndividuals}" checkUrl="'${rootURL}/publisher/DistructPublisher/longRequired?value='+escape(this.value)" />
+        <f:textbox name="numberOfIndividuals" value="${instance.numberOfIndividuals}" checkUrl="'${rootURL}/publisher/DistructPublisher/required?value='+escape(this.value)" />
     </f:entry>
     
 	<f:entry title="${%Check if indiv q's are to be printed, uncheck if only population q's}">

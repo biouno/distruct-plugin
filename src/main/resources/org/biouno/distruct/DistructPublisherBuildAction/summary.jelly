@@ -4,10 +4,12 @@
     xmlns:t="/lib/hudson"
 	xmlns:f="/lib/form"
     xmlns:i="jelly:fmt">
-    <t:summary icon="/plugin/structure/icons/icon-details.gif">
+    <t:summary icon="/plugin/distruct/icons/icon-details.gif">
         <p><strong>Distruct results</strong></p>
         <ul>        
 		  <li>Output file=${it.outputFile}</li>
 		</ul>
+		<p><strong>Cropped image</strong></p>
+		
 	</t:summary>
 </j:jelly>

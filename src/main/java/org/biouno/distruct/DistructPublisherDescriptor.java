@@ -116,7 +116,7 @@ public class DistructPublisherDescriptor  extends BuildStepDescriptor<Publisher>
 	}
 
 	@Override
-	public boolean isApplicable(Class<? extends AbstractProject> jobType) {
+	public boolean isApplicable(@SuppressWarnings("rawtypes") Class<? extends AbstractProject> jobType) {
 		return true;
 	}
 
