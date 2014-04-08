@@ -4,13 +4,44 @@
 	<parent>
 		<groupId>org.jenkins-ci.plugins</groupId>
 		<artifactId>plugin</artifactId>
-		<version>1.509.4</version>
+		<version>1.532.2</version>
 	</parent>
+	
+	<inceptionYear>2014</inceptionYear>
 
 	<groupId>org.biouno</groupId>
 	<artifactId>distruct</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<name>Distruct Plug-in</name>
+	<version>0.1-SNAPSHOT</version>
 	<packaging>hpi</packaging>
+	<description>This plug-in integrates Jenkins to Distruct.</description>
+	
+	<developers>
+        <developer>
+            <id>kinow</id>
+            <name>Bruno P. Kinoshita</name>
+            <email>brunodepaulak@yahoo.com.br</email>
+            <timezone>-3</timezone>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+    
+    <organization>
+        <name>BioUno</name>
+        <url>http://www.biouno.org</url>
+    </organization>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    
+    <scm>
+        <connection>scm:git:git://github.com/biouno/distruct-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:biouno/distruct-plugin.git</developerConnection>
+        <url>http://github.com/biouno/distruct-plugin</url>
+    </scm>
 
 	<repositories>
 		<repository>
@@ -25,5 +56,18 @@
 			<url>http://repo.jenkins-ci.org/public/</url>
 		</pluginRepository>
 	</pluginRepositories>
+	
+	<distributionManagement>
+        <repository>
+            <id>jenkins.repo.release</id>
+            <name>Repository for Releases</name>
+            <url>${jenkins.repo.path}/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>jenkins.repo.snapshot</id>
+            <name>Repository for Snapshots</name>
+            <url>${jenkins.repo.path}/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 
 </project>
