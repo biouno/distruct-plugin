@@ -11,23 +11,10 @@ import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
 import hudson.util.ArgumentListBuilder;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.util.List;
 import java.util.Map;
 
-import javax.imageio.ImageIO;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.ghost4j.converter.ConverterException;
-import org.ghost4j.converter.PDFConverter;
-import org.ghost4j.document.DocumentException;
-import org.ghost4j.document.PSDocument;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -452,23 +439,11 @@ public class DistructPublisher extends Notifier {
 			return Boolean.FALSE;
 		} else {
 			FilePath outputFilePath = new FilePath(workspace, outputFile);
-			FilePath pdf = new FilePath(workspace, "distruct-converted.pdf");
-			FilePath jpg = new FilePath(workspace, "distruct.jpg");
-			try {
-				ps2pdf(outputFilePath, pdf);
 
-				PdfUtils.cropToJPEG(new File(pdf.getRemote()),
-						new File(jpg.getRemote()), new File(new FilePath(
-								workspace, "distruct.pdf").getRemote()));
-			} catch (Exception e) {
-				e.printStackTrace(listener.getLogger());
-				throw new AbortException("Failed to generate PDF: "
-						+ e.getMessage());
-			}
-
+			String relativeName = new File(workspace.getRemote()).toURI().relativize(new File(outputFilePath.getRemote()).toURI()).getPath();
+			
 			// add action
-			DistructPublisherBuildAction action = new DistructPublisherBuildAction(
-					outputFilePath, jpg);
+			DistructPublisherBuildAction action = new DistructPublisherBuildAction(relativeName);
 			build.addAction(action);
 			return Boolean.TRUE;
 		}

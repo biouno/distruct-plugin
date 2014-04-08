@@ -12,28 +12,10 @@
 	<version>1.0-SNAPSHOT</version>
 	<packaging>hpi</packaging>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.apache.pdfbox</groupId>
-			<artifactId>pdfbox</artifactId>
-			<version>1.8.4</version>
-		</dependency>
-		<dependency>
-			<groupId>org.ghost4j</groupId>
-			<artifactId>ghost4j</artifactId>
-			<version>0.5.1</version>
-		</dependency>
-	</dependencies>
-
 	<repositories>
 		<repository>
 			<id>repo.jenkins-ci.org</id>
 			<url>http://repo.jenkins-ci.org/public/</url>
-		</repository>
-		<repository>
-			<id>org.ghost4j.repository.releases</id>
-			<name>Ghost4J releases</name>
-			<url>http://repo.ghost4j.org/maven2/releases</url>
 		</repository>
 	</repositories>
 

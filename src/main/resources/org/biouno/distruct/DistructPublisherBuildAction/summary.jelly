@@ -7,7 +7,7 @@
     <t:summary icon="/plugin/distruct/icons/icon-details.gif">
         <p><strong>Distruct results</strong></p>
         <ul>        
-		  <li>Output file=${it.outputFile}</li>
+		  <li>Output file <a href="../${it.owner.project.url}ws/${it.relativeName}">${it.relativeName}</a></li>
 		</ul>
 		<p><strong>Cropped image</strong></p>
 		
