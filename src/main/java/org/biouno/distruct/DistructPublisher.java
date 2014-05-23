@@ -498,8 +498,8 @@ public class DistructPublisher extends Notifier {
 							pdfFile, 
 							jpegFile, 
 							croppedFile);
-			} catch (IOException e) {
 				listener.getLogger().println("Document cropped and converted to JPEG");
+			} catch (Throwable e) {
 				e.printStackTrace(listener.getLogger());
 			}
 			
