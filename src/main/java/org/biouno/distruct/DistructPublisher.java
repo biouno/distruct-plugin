@@ -7,6 +7,7 @@ import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
+import hudson.remoting.Callable;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
 import hudson.util.ArgumentListBuilder;
@@ -15,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -442,6 +444,26 @@ public class DistructPublisher extends Notifier {
 
 			String relativeName = new File(workspace.getRemote()).toURI().relativize(new File(outputFilePath.getRemote()).toURI()).getPath();
 			
+			final File parent = new File(outputFilePath.getParent().getRemote());
+			final String pdfName = outputFilePath.getBaseName() + ".pdf";
+			final File pdfFileName = new File(parent, pdfName).getAbsoluteFile();
+			listener.getLogger().println(String.format("Converting %s to PDF %s", outputFilePath.getRemote(), pdfName));
+			ArgumentListBuilder convertArgs = new ArgumentListBuilder();
+			convertArgs.add("ps2pdf");
+			convertArgs.add("-dPDFSETTINGS=/prepress");
+			convertArgs.add(outputFilePath.getRemote());
+			convertArgs.add(pdfFileName);
+			listener.getLogger().println("Executing ps2pdf. Command args: " + convertArgs.toStringWithQuote());
+			Integer convertExitCode = launcher.launch().cmds(convertArgs).envs(env).stdout(listener).pwd(build.getModuleRoot()).join();
+			if (convertExitCode == 0) {
+				listener.getLogger().println("Document converted to PDF");
+				
+				final CropCallable callable = new CropCallable(pdfFileName, listener);
+				launcher.getChannel().call(callable);
+			} else {
+				listener.getLogger().println("Could not convert document to PDF. Check if ps2pdf is in the PATH env var");
+			}
+			
 			// add action
 			DistructPublisherBuildAction action = new DistructPublisherBuildAction(relativeName);
 			build.addAction(action);
@@ -449,6 +471,53 @@ public class DistructPublisher extends Notifier {
 		}
 	}
 
+	/**
+	 * Callable to convert PS to PDF, PDF to JPEG and then crop it.
+	 */
+	private static class CropCallable implements Callable<Void, RuntimeException> {
+		
+		private static final long serialVersionUID = 1L;
+		
+		private File pdfFile;
+		private final BuildListener listener;
+
+		public CropCallable(File pdfFile, BuildListener listener) {
+			this.pdfFile = pdfFile;
+			this.listener = listener;
+		}
+
+		public Void call() throws RuntimeException {
+			listener.getLogger().println("Cropping PDF blank area into new JPEG");
+
+			final File jpegFile = new File(pdfFile.getParent(), FilenameUtils.removeExtension(pdfFile.getName()) + ".jpg");
+			final File croppedFile = new File(pdfFile.getParent(), FilenameUtils.removeExtension(pdfFile.getName()) + "-cropped.jpg");
+			
+			CropPDF crop = new CropPDF();
+			try {
+				crop.cropToJPEG(
+							pdfFile, 
+							jpegFile, 
+							croppedFile);
+			} catch (IOException e) {
+				listener.getLogger().println("Document cropped and converted to JPEG");
+				e.printStackTrace(listener.getLogger());
+			}
+			
+			return null;
+		}
+	}
+
+	/**
+	 * Create distruct input file.
+	 * @param workspace
+	 * @param labelsFile
+	 * @param languagesFile
+	 * @param permutationsToPrintFile
+	 * @param envVars
+	 * @return
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	private FilePath createDrawParams(FilePath workspace, String labelsFile,
 			String languagesFile, String permutationsToPrintFile,
 			EnvVars envVars) throws IOException, InterruptedException {
