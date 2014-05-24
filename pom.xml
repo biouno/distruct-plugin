@@ -11,7 +11,7 @@
 	<groupId>org.biouno</groupId>
 	<artifactId>distruct</artifactId>
 	<name>Distruct Plug-in</name>
-	<version>0.2</version>
+	<version>0.3-SNAPSHOT</version>
 	<packaging>hpi</packaging>
 	<description>This plug-in integrates Jenkins to Distruct.</description>
 	
