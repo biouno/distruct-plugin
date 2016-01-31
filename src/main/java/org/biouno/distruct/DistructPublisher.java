@@ -1,23 +1,23 @@
 package org.biouno.distruct;
 
-import hudson.AbortException;
-import hudson.EnvVars;
-import hudson.Extension;
-import hudson.FilePath;
-import hudson.Launcher;
-import hudson.model.BuildListener;
-import hudson.model.AbstractBuild;
-import hudson.remoting.Callable;
-import hudson.tasks.BuildStepMonitor;
-import hudson.tasks.Notifier;
-import hudson.util.ArgumentListBuilder;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
+
+import hudson.AbortException;
+import hudson.EnvVars;
+import hudson.Extension;
+import hudson.FilePath;
+import hudson.Launcher;
+import hudson.model.AbstractBuild;
+import hudson.model.BuildListener;
+import hudson.remoting.Callable;
+import hudson.tasks.BuildStepMonitor;
+import hudson.tasks.Notifier;
+import hudson.util.ArgumentListBuilder;
 
 /**
  * Distruct publisher.
@@ -395,6 +395,9 @@ public class DistructPublisher extends Notifier {
 
 		final EnvVars envVars = build.getEnvironment(listener);
 		envVars.overrideAll(build.getBuildVariables());
+
+		final String outputFile = envVars.expand(this.outputFile);
+
 		final FilePath workspace = build.getWorkspace();
 		final Map<String, String> env = build.getEnvironment(listener);
 
