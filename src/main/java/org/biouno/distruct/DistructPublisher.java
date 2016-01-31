@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
+import org.jenkinsci.remoting.Role;
+import org.jenkinsci.remoting.RoleChecker;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import hudson.AbortException;
@@ -508,6 +510,10 @@ public class DistructPublisher extends Notifier {
 			
 			return null;
 		}
+
+        public void checkRoles(RoleChecker rc) throws SecurityException {
+            rc.check(this, Role.UNKNOWN);
+        }
 	}
 
 	/**
