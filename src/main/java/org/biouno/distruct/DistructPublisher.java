@@ -448,26 +448,26 @@ public class DistructPublisher extends Notifier {
 			FilePath outputFilePath = new FilePath(workspace, outputFile);
 
 			String relativeName = new File(workspace.getRemote()).toURI().relativize(new File(outputFilePath.getRemote()).toURI()).getPath();
-			
-			final File parent = new File(outputFilePath.getParent().getRemote());
-			final String pdfName = outputFilePath.getBaseName() + ".pdf";
-			final File pdfFileName = new File(parent, pdfName).getAbsoluteFile();
-			listener.getLogger().println(String.format("Converting %s to PDF %s", outputFilePath.getRemote(), pdfName));
-			ArgumentListBuilder convertArgs = new ArgumentListBuilder();
-			convertArgs.add("ps2pdf");
-			convertArgs.add("-dPDFSETTINGS=/prepress");
-			convertArgs.add(outputFilePath.getRemote());
-			convertArgs.add(pdfFileName);
-			listener.getLogger().println("Executing ps2pdf. Command args: " + convertArgs.toStringWithQuote());
-			Integer convertExitCode = launcher.launch().cmds(convertArgs).envs(env).stdout(listener).pwd(build.getModuleRoot()).join();
-			if (convertExitCode == 0) {
-				listener.getLogger().println("Document converted to PDF");
-				
-				final CropCallable callable = new CropCallable(pdfFileName, listener);
-				launcher.getChannel().call(callable);
-			} else {
-				listener.getLogger().println("Could not convert document to PDF. Check if ps2pdf is in the PATH env var");
-			}
+//			
+//			final File parent = new File(outputFilePath.getParent().getRemote());
+//			final String pdfName = outputFilePath.getBaseName() + ".pdf";
+//			final File pdfFileName = new File(parent, pdfName).getAbsoluteFile();
+//			listener.getLogger().println(String.format("Converting %s to PDF %s", outputFilePath.getRemote(), pdfName));
+//			ArgumentListBuilder convertArgs = new ArgumentListBuilder();
+//			convertArgs.add("ps2pdf");
+//			convertArgs.add("-dPDFSETTINGS=/prepress");
+//			convertArgs.add(outputFilePath.getRemote());
+//			convertArgs.add(pdfFileName);
+//			listener.getLogger().println("Executing ps2pdf. Command args: " + convertArgs.toStringWithQuote());
+//			Integer convertExitCode = launcher.launch().cmds(convertArgs).envs(env).stdout(listener).pwd(build.getModuleRoot()).join();
+//			if (convertExitCode == 0) {
+//				listener.getLogger().println("Document converted to PDF");
+//				
+//				final CropCallable callable = new CropCallable(pdfFileName, listener);
+//				launcher.getChannel().call(callable);
+//			} else {
+//				listener.getLogger().println("Could not convert document to PDF. Check if ps2pdf is in the PATH env var");
+//			}
 			
 			// add action
 			DistructPublisherBuildAction action = new DistructPublisherBuildAction(relativeName);
